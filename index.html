@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mabel Chen — Graphic Designer</title>
+<meta name="description" content="Mabel Chen is a graphic designer working across brand identity, book design and typography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #F4F4F2; --fg: #0A0A0A; --mute: #8A8A86; --line: #E0E0DC; --ph: #E8E8E5;
+    color-scheme: light;
+    --g: 16px;                                  /* the one gutter used everywhere */
+    --pad: clamp(16px, 1.6vw, 28px);
+    --ease: cubic-bezier(.19, 1, .22, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+  .statement .ln { display: block; }
+
+  /* ---------- landing intro ---------- */
+  .intro { position: fixed; inset: 0; z-index: 50; background: var(--bg); }
+  .intro.done { pointer-events: none; }
+  .intro .i-logo, .intro .i-quote { position: fixed; margin: 0; transform-origin: 50% 50%; will-change: transform; }
+  .intro .i-logo { color: var(--fg); visibility: hidden; }
+  .intro .i-quote .ln > i { font-style: normal; display: inline-block; clip-path: inset(-0.25em 100% -0.35em 0); }
+  html.intro-lock, html.intro-lock body { overflow: hidden; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.35; -webkit-font-smoothing: antialiased; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+  img { display: block; width: 100%; height: auto; }
+  p { margin: 0; }
+
+  /* ---------- header (as the reference: logo / nav / action) ---------- */
+  .hdr { position: sticky; top: 0; z-index: 20; background: var(--bg); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: calc(14px + env(safe-area-inset-top, 0px)) var(--pad) 14px; }
+  .brand { justify-self: start; display: inline-flex; align-items: center; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+  .brand svg { display: block; height: 19px; width: auto; }
+  .brand:hover { opacity: .6; }
+  .nav { display: flex; gap: .3em; font-size: 15px; }
+  .nav a { color: var(--mute); transition: color .25s ease; }
+  .nav a:hover, .nav a[aria-current="page"] { color: var(--fg); }
+  .nav a[aria-current="page"] { font-weight: 500; }
+  .cta { justify-self: end; font-size: 15px; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+  .cta:hover { color: var(--mute); }
+
+  main { padding: 0 var(--pad); }
+  .view { display: none; }
+  .view.on { display: block; }
+
+  /* ---------- home statement ---------- */
+  .hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); padding: clamp(40px, 6vh, 72px) 0 clamp(72px, 12vh, 140px); }
+  .qm { grid-column: 1 / 3; font-size: clamp(34px, 3.6vw, 60px); font-weight: 600; line-height: .8; }
+  .statement { grid-column: 4 / -1; justify-self: end; text-align: right; font-size: clamp(32px, 4.1vw, 70px); line-height: 1; letter-spacing: -0.035em; font-weight: 600; max-width: 21ch; }
+
+  /* ---------- works: three columns, top-aligned; each next image starts one gutter below the one above ---------- */
+  /* works: rows of three; every row is top-aligned and starts one gutter below the tallest item above it */
+  .works { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--g) * 3) var(--g); align-items: start; }
+  @media (max-width: 900px) { .works { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .works { grid-template-columns: 1fr; } }
+  .tile { display: block; }
+  .tile .cap { display: block; padding-top: 8px; font-size: 13px; line-height: 1.15; }
+  .tile .cap b { font-weight: 600; }
+  .tile .cap u { text-decoration: none; color: #555552; }
+
+  /* ---------- the scroll reveal: a slow wipe up with the picture settling inside its frame ---------- */
+  .fr { display: block; position: relative; overflow: hidden; background: var(--ph); }
+  .fr img, .fr video { display: block; width: 100%; height: auto; transform-origin: 50% 60%; will-change: transform; }
+  .rv .fr { clip-path: inset(100% 0 0 0); transition: clip-path 1.7s var(--ease); }
+  .rv .fr img, .rv .fr video { transform: scale(1.16) translateY(var(--py, 0px)); transition: transform 2.2s var(--ease); }
+  .rv .cap, .rv .num { opacity: 0; transform: translateY(8px); transition: opacity 1s ease .5s, transform 1.2s var(--ease) .5s; }
+  .rv.in .fr { clip-path: inset(0 0 0 0); }
+  .rv.in .fr img, .rv.in .fr video { transform: scale(1.08) translateY(var(--py, 0px)); }
+  .rv.in .cap, .rv.in .num { opacity: 1; transform: none; }
+  .tile:hover .fr img { transform: scale(1.12) translateY(var(--py, 0px)); }
+  .fr.missing { aspect-ratio: 4 / 5; }
+  .fr.missing::after { content: attr(data-src); position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: var(--mute); }
+
+  /* ---------- project page (image 2 reference) ---------- */
+  .p-head { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: clamp(48px, 8vh, 96px) 0 clamp(28px, 4vh, 40px); }
+  .p-head .arr { width: 26px; height: 26px; margin-bottom: 14px; color: var(--mute); }
+  .p-title { margin: 0; font-size: clamp(44px, 4.6vw, 84px); line-height: .95; letter-spacing: -0.04em; font-weight: 500; }
+  .meta { margin: 0; font-size: 13px; line-height: 1.4; padding-top: 40px; }
+  .meta dt { color: var(--mute); font-size: 11.5px; margin-bottom: 6px; }
+  .meta dd { margin: 0 0 22px; }
+  .desc { padding-top: 40px; font-size: 14px; line-height: 1.42; max-width: 62ch; }
+  .desc h2 { margin: 0 0 6px; font-size: 11.5px; font-weight: 400; color: var(--mute); }
+  .desc p + p { margin-top: 1.15em; }
+
+  .p-row { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 63fr); column-gap: var(--g); align-items: start; margin-bottom: var(--g); }
+  .p-row.flip { grid-template-columns: minmax(0, 63fr) minmax(0, 37fr); }
+  .p-row.full { grid-template-columns: 1fr; }
+  .p-row.bleed { margin-left: calc(var(--pad) * -1); margin-right: calc(var(--pad) * -1); }
+  .p-row.two { grid-template-columns: 1fr 1fr; }
+  .p-row.full .fig.tall { width: calc((100% - var(--g)) * .63); margin-left: auto; }   /* portrait images don't fill the whole width */
+  .num { display: block; margin-top: 10px; font-size: clamp(22px, 2vw, 30px); color: var(--mute); letter-spacing: -0.02em; }
+  .fig .cap { display: block; padding-top: 8px; font-size: 13px; max-width: 46ch; }
+
+  .chap { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: clamp(72px, 12vh, 140px) 0; }
+  .chap h3 { grid-column: 2; margin: 0; font-size: 11.5px; font-weight: 400; color: var(--mute); padding-top: .45em; }
+  .chap p { grid-column: 3; font-size: clamp(19px, 1.55vw, 26px); line-height: 1.22; letter-spacing: -0.015em; max-width: 34ch; }
+  .chap p + p { margin-top: .8em; }
+
+  /* previous (left) / next (right): small label above the big title */
+  .next { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--g); padding: clamp(96px, 16vh, 180px) 0 24px; border-bottom: 1px solid var(--line); }
+  .next a { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .next a:last-child { align-items: flex-end; text-align: right; }
+  .next span { color: var(--mute); font-size: 13px; }
+  .next b { font-size: clamp(30px, 4.6vw, 84px); letter-spacing: -0.04em; font-weight: 500; line-height: 1; transition: color .25s ease; }
+  .next a:hover b { color: var(--mute); }
+
+  /* ---------- index ---------- */
+  .list { margin-top: clamp(48px, 8vh, 96px); border-top: 1px solid var(--line); }
+  .list a { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 63fr); column-gap: var(--g); padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; transition: color .25s ease; }
+  .list:hover a { color: var(--mute); }
+  .list a:hover { color: var(--fg); }
+  .peek { position: fixed; z-index: 30; left: 0; top: 0; width: 220px; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
+  .peek.on { opacity: 1; }
+
+  /* ---------- about / playground ---------- */
+  .lead { margin: clamp(48px, 8vh, 96px) 0 0; font-size: clamp(32px, 4.1vw, 70px); line-height: 1; letter-spacing: -0.035em; font-weight: 600; max-width: 20ch; }
+  .about-lead { max-width: none; }
+  .about { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); margin-top: clamp(56px, 9vh, 110px); }
+  .about .body { grid-column: 3; font-size: 15px; line-height: 1.45; max-width: 60ch; }
+  .about .body p + p { margin-top: 1em; }
+  .about dl { grid-column: 2; margin: 0; font-size: 13px; }
+  .about dt { color: var(--mute); font-size: 11.5px; margin-bottom: 6px; }
+  .about dd { margin: 0 0 22px; }
+  .about dd a { text-decoration: underline transparent; text-decoration-thickness: 1px; text-underline-offset: 3px; transition: text-decoration-color .25s ease; }
+  .about dd a:hover, .about dd a:focus-visible { text-decoration-color: currentColor; }
+  .cv { margin-top: clamp(80px, 13vh, 160px); }
+  .cv-row { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: 16px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.42; }
+  .cv-sec { font-size: clamp(24px, 2.2vw, 34px); line-height: 1; letter-spacing: -0.03em; font-weight: 600; }
+  .cv-row:has(.cv-sec:not(:empty)) { border-top: 1px solid var(--fg); margin-top: 12px; padding-top: 24px; }
+  .cv-row:has(.cv-sec:not(:empty)):first-child { margin-top: 0; }
+  .cv-date { color: var(--mute); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .cv-t { font-weight: 500; }
+  .cv-o { color: var(--mute); margin-top: 3px; line-height: 1.3; }
+  .cv-d { margin-top: 3px; max-width: 60ch; line-height: 1.3; }
+  .cv-t { line-height: 1.3; }
+  .cv-row > div { max-width: 62ch; }
+  .seq .fr img { position: absolute; inset: 0; height: 100%; object-fit: cover; opacity: 0; }
+  .seq .fr img:first-child { position: relative; inset: auto; height: auto; }
+  .seq .fr img.on { opacity: 1; }
+  /* text sitting beside an image inside a row */
+  .stack { display: flex; flex-direction: column; gap: var(--g); }
+  .tcell { padding: 4px 0 0; }
+  .p-row:has(.tcell) { margin: clamp(64px, 10vh, 120px) 0; }
+  .tcell h3 { margin: 0 0 14px; font-size: 11.5px; font-weight: 400; color: var(--mute); }
+  .tcell p { font-size: clamp(19px, 1.55vw, 26px); line-height: 1.22; letter-spacing: -0.015em; max-width: 30ch; }
+  .p-row.flip .tcell, .p-row:not(.flip):not(.two):not(.full) .tcell:last-child { padding-left: clamp(0px, 4vw, 64px); }
+  .snd { all: unset; position: absolute; right: 14px; bottom: 12px; z-index: 2; font-size: 13px; color: #fff; mix-blend-mode: difference; border-bottom: 1px solid currentColor; line-height: 1.3; }
+  .pg-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--g); align-items: start; }
+  .pg-item { all: unset; display: block; transform-origin: 0 0; }
+  .pg-item.big { grid-column: span 3; }
+  .pg-item:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+  @media (max-width: 900px) { .pg-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .pg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  #v-playground .lead { margin-bottom: clamp(48px, 8vh, 96px); }
+
+  /* no widows: browsers that support it rebalance lines; the script below also ties the last two words */
+  p, dd, .cv-d, .cv-o { text-wrap: pretty; }
+  .lead, .p-title, .chap h3, .next b { text-wrap: balance; }
+  .cursor { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    html, body, a, button, * { cursor: none !important; }
+    .cursor { display: block; position: fixed; left: 0; top: 0; z-index: 100; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+      background: #fff; mix-blend-mode: difference; pointer-events: none; opacity: 0; transition: opacity .2s ease, width .25s ease, height .25s ease, margin .25s ease; }
+    .cursor.on { opacity: 1; }
+    .cursor.hot { width: 34px; height: 34px; margin: -17px 0 0 -17px; }
+  }
+  footer { display: flex; justify-content: space-between; padding: clamp(80px, 12vh, 140px) var(--pad) 18px; font-size: 11.5px; }
+
+  @media (max-width: 900px) {
+    .hdr { grid-template-columns: 1fr auto; row-gap: 10px; }
+    .nav { grid-column: 1 / -1; grid-row: 2; }
+    .p-head, .chap, .about { grid-template-columns: 1fr 1fr; }
+    .p-head > :first-child, .chap h3, .about .body { grid-column: 1 / -1; }
+    .chap p { grid-column: 1 / -1; margin-top: 10px; }
+    .about dl { grid-column: 1 / -1; grid-row: 2; margin-top: 40px; }
+    .cv-row { grid-template-columns: 1fr 1fr; row-gap: 6px; }
+    .cv-row > div { grid-column: 1 / -1; }
+    .cv-sec:empty { display: none; }
+    .cv-sec:empty + .cv-date { grid-column: 1 / -1; }
+    .desc { padding-top: 40px; }
+    .statement { grid-column: 1 / -1; margin-top: 18px; }
+    .qm { grid-column: 1 / -1; }
+  }
+  @media (max-width: 600px) {
+    .p-head { grid-template-columns: 1fr; }
+    .p-row, .p-row.flip, .p-row.two { grid-template-columns: 1fr; row-gap: var(--g); }
+    .list a { grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv .fr, .rv .fr img, .rv .cap, .rv .num { transition: none !important; clip-path: none !important; opacity: 1 !important; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="intro" aria-hidden="true" hidden></div>
+<header class="hdr">
+  <a class="brand" href="#home" aria-label="mabel.chen, home"><svg viewBox="101 355 1526 292" fill="currentColor" aria-hidden="true"><path d="M347.8,544.05v96.51h-28.12v-78.29c0-22.37-1.6-41.54-15.66-52.09-14.06-10.55-48.57-7.99-61.35,23.65-3.2,7.67-4.16,16.62-4.16,27.8v78.93h-27.48v-78.93c0-15.02,0-28.12-4.79-38.67-2.56-5.11-5.76-9.27-10.23-12.78-17.57-13.1-66.15-5.75-66.15,51.45v78.93h-28.76v-155.95h28.76v30.04c3.19-12.14,19.81-34.51,47.29-34.51,35.79,0,50.17,27.16,54.01,39.63,3.84-12.46,22.69-39.63,54.01-39.63,43.46,0,62.64,31.64,62.64,63.91Z"/><path d="M498.55,484.61v24.93c-10.22-13.74-29.72-30.04-61.68-30.04-20.77,0-39.94,8.63-54.64,24.29-14.7,15.66-22.69,36.43-22.69,58.48,0,45.7,34.52,83.09,77.34,83.09,31.96,0,51.45-16.62,61.68-30.04v25.25h29.4v-155.95h-29.4ZM442.63,623.31c-30.68,0-55.28-27.16-55.28-60.72s24.6-61.04,55.28-61.04,55.61,27.16,55.61,61.04-24.61,60.72-55.61,60.72Z"/><path d="M691.49,503.79c-14.7-15.66-33.88-24.29-54.64-24.29-31.64,0-50.81,15.98-61.36,29.4v-153.59h-29.4v285.25h29.4v-24.93c10.22,13.42,29.72,29.72,61.36,29.72,42.82,0,77.34-37.39,77.34-83.09,0-22.05-7.99-42.82-22.69-58.48ZM631.09,623.31c-31,0-55.6-27.16-55.6-60.72s24.6-61.04,55.6-61.04,55.29,27.16,55.29,61.04-24.6,60.72-55.29,60.72Z"/><path d="M816.87,619.47c-12.14,2.88-24.6,1.28-35.79-4.15-14.06-7.03-23.65-16.94-28.44-31.32l130.06-31-1.27-7.03c-1.28-5.75-3.2-11.82-5.44-16.94-6.71-14.06-16.94-25.89-29.72-34.19-12.78-8.31-27.48-12.46-42.18-12.46-6.07,0-12.14.64-18.22,2.24-20.45,4.79-38.03,17.9-49.21,36.43-11.19,18.53-14.7,40.58-9.59,62,4.79,21.09,17.26,39.31,35.47,51.13,17.9,11.5,39.31,15.34,60.08,10.23,12.14-2.88,23.01-8.63,32.6-16.62,7.67-6.71,14.06-14.7,18.85-23.65l-23.01-10.55c-7.35,13.1-19.81,22.37-34.2,25.88ZM749.13,563.87c.64-7.03,2.24-13.74,4.79-20.45,2.24-6.39,5.75-12.14,10.22-17.26,7.35-8.31,16.94-14.06,27.8-16.62,10.54-2.56,21.41-1.6,31.64,2.24,13.1,5.43,22.37,15.02,29.72,27.16l-104.18,24.93Z"/><path d="M1143.31,615.63c-15.02,18.22-37.71,30.04-62.96,30.04-45.38,0-81.81-37.07-81.81-83.09s36.43-82.77,81.81-82.77c24.61,0,46.66,11.19,61.68,28.76l-20.13,18.86c-9.91-12.78-24.93-21.09-41.55-21.09-29.72,0-53.69,25.25-53.69,56.24s23.97,56.56,53.69,56.56c17.26,0,32.6-8.63,42.5-22.05l20.45,18.53Z"/><path d="M1258.17,509.54c-18.53-13.1-69.34-5.75-69.34,51.13v79.89h-28.44v-285.25h28.44v158.7c3.51-12.14,20.77-33.87,49.53-33.87,45.06,0,64.23,31.64,64.23,63.91v96.51h-28.12v-79.25c0-22.05-1.92-41.23-16.3-51.77Z"/><path d="M1406.37,619.47c-12.14,2.88-24.6,1.28-35.79-4.15-14.06-7.03-23.65-16.94-28.44-31.32l130.06-31-1.27-7.03c-1.28-5.75-3.2-11.82-5.43-16.94-6.71-14.06-16.94-25.89-29.72-34.19-12.78-8.31-27.48-12.46-42.18-12.46-6.07,0-12.14.64-18.22,2.24-20.45,4.79-38.03,17.9-49.21,36.43-11.19,18.53-14.7,40.58-9.59,62,4.79,21.09,17.26,39.31,35.47,51.13,17.9,11.5,39.31,15.34,60.08,10.23,12.14-2.88,23.01-8.63,32.6-16.62,7.67-6.71,14.06-14.7,18.85-23.65l-23.01-10.55c-7.35,13.1-19.81,22.37-34.19,25.88ZM1338.63,563.87c.64-7.03,2.24-13.74,4.79-20.45,2.24-6.39,5.75-12.14,10.22-17.26,7.35-8.31,16.94-14.06,27.8-16.62,10.55-2.56,21.41-1.6,31.64,2.24,13.1,5.43,22.37,15.02,29.72,27.16l-104.18,24.93Z"/><path d="M1582.48,509.54c-18.21-13.1-69.02-5.75-69.02,51.13v79.89h-28.44v-155.95h28.44v29.4c3.2-12.14,20.77-33.87,49.21-33.87,45.38,0,64.23,31.64,64.23,63.91v96.51h-28.12v-79.25c0-22.05-1.92-41.23-16.3-51.77Z"/><rect x="896.57" y="355.32" width="28.44" height="285.25"/><rect x="954.84" y="608.6" width="28.76" height="31.96"/></svg></a>
+  <nav class="nav" aria-label="Primary">
+    <a href="#work" data-k="work">Work,</a>
+    <a href="#about" data-k="about">About,</a>
+    <a href="#playground" data-k="playground">Playground</a>
+  </nav>
+  <a class="cta" href="mailto:aestatis511@gmail.com">Say hello</a>
+</header>
+
+<main>
+  <section class="view" id="v-home">
+    <div class="hero">
+      <span class="qm" aria-hidden="true">“</span>
+      <p class="statement"><span class="ln">Code gave me systems.</span> <span class="ln">Translation gave me feeling.</span> <span class="ln">Design is the space between,</span> <span class="ln">where I find my balance.</span></p>
+    </div>
+    <div class="works" id="works" aria-label="Selected work"></div>
+  </section>
+
+  <section class="view" id="v-project"></section>
+
+  <section class="view" id="v-about">
+    <h1 class="lead about-lead">Stuck in code and lost<br>in translation, I found myself<br>in design.</h1>
+    <div class="about">
+      <dl>
+        <dt>Based in</dt><dd>Pasadena, California</dd>
+        <dt>Languages</dt><dd>Mandarin (native)<br>English (advanced)<br>Japanese (advanced, JLPT N1)</dd>
+        <dt>Contact</dt>
+        <dd><a href="mailto:aestatis511@gmail.com">Email</a><br><a href="https://www.linkedin.com/in/mabel-chen-61757a385/" target="_blank" rel="noopener">LinkedIn</a><br><a href="https://www.instagram.com/aestatis_mare?igsh=OGQ5ZDc2ODk2ZA==" target="_blank" rel="noopener">Instagram</a><br><a href="Mabel_Chen_Resume.pdf" target="_blank" rel="noopener">CV (PDF)</a></dd>
+      </dl>
+      <div class="body">
+        <p>Code gave me systems; translation gave me feeling. I start by observing everyday things, from a single leaf to an endless road, and follow my curiosity into the stories behind them. Systems are my roots; feeling is what blooms on top.</p>
+        <p>Working across Chinese, English and Japanese taught me that meaning depends on context and rarely survives a literal translation. Programming gave me the other side: a way to think systematically and find the logic beneath things. I build structures to make sense of what I observe, then look again to see where they fall short, or where meaning begins to shift.</p>
+        <p>What interests me most is what happens when an idea moves from one system into another. Rather than offering a single answer, I want my work to reveal overlooked perspectives and invite people to see familiar things differently.</p>
+      </div>
+    </div>
+    <div class="cv">
+      <div class="cv-row"><span class="cv-sec">Education</span><span class="cv-date">Sep 2025–Present</span><div><p class="cv-t">ArtCenter College of Design</p><p class="cv-o">Master of Fine Arts in Graphic Design (candidate), Pasadena, CA</p><p class="cv-d">Thesis in progress: Data visualization is never neutral.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Sep 2022–Jun 2024</span><div><p class="cv-t">Peking University</p><p class="cv-o">Master of Japanese Translation and Interpreting, Beijing</p><p class="cv-d">Thesis: a comparative study of Chinese translations of Kajii Motojirō’s “Lemon.” Designed and printed a monthly eight-page booklet introducing new Japanese books, with bilingual excerpts and short promotional videos.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Sep 2017–Jun 2021</span><div><p class="cv-t">East China Normal University</p><p class="cv-o">Bachelor of Engineering in Software Engineering, Shanghai</p><p class="cv-d">Thesis: design and implementation of a personal life assistant app for Android. Exchange student at the University of California, Berkeley, Jan–May 2020.</p></div></div>
+      <div class="cv-row"><span class="cv-sec">Expertise</span><span class="cv-date"></span><div><p class="cv-t">Design software</p><p class="cv-o">Illustrator, InDesign, Photoshop, Nomad Sculpt, Figma</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Programming</p><p class="cv-o">C, C++, C#, JavaScript, HTML, CSS, Vue.js, React, SQL</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">AI tools</p><p class="cv-o">Claude Code, ChatGPT, Midjourney, Adobe Firefly, Figma AI</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Skills</p><p class="cv-o">Editorial design, brand identity, exhibition design, screen printing, bookbinding, 3D&nbsp;printing, frontend development</p></div></div>
+      <div class="cv-row"><span class="cv-sec">Experience</span><span class="cv-date">Sep 2026–Present</span><div><p class="cv-t">Teaching Assistant</p><p class="cv-o">ArtCenter College of Design</p><p class="cv-d">Assist Professor Brad Bartlett with Graduate Seminar 3 in the Graphic Design Master of Fine Arts program. Give students feedback on their research and projects, and manage course communication.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Apr 2024–Aug 2024</span><div><p class="cv-t">Director of Online Auction, Artwork Department</p><p class="cv-o">Shanghai Dagong Auction Co., Ltd.</p><p class="cv-d">Managed weekly inventory and edited artwork listings for online auctions. Designed weekly auction posters, and promotional posters, videos and catalogs for two large offline auctions each year.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Jan 2024–Apr 2024</span><div><p class="cv-t">Japanese Translation Intern</p><p class="cv-o">Shanghai Cangyuan Industrial Co., Ltd.</p><p class="cv-d">Translated 150,000 words of official documents between Chinese and Japanese.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Oct 2023–Dec 2023</span><div><p class="cv-t">Editorial Intern, Children’s Department</p><p class="cv-o">Beijing Science and Technology Publishing Co., Ltd.</p><p class="cv-d">Recommended five books a day to expand the catalog, managed weekly photography and social media on RED (Xiaohongshu), and translated between Chinese, Japanese and English, averaging 4,000 words a day.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Oct 2021–Dec 2021</span><div><p class="cv-t">Japanese Language Intern</p><p class="cv-o">Shanghai Soar Information Technology Co., Ltd.</p><p class="cv-d">Wrote promotional copy across 500 templates a day, updated merchant information, and helped a senior specialist redesign the login page in Figma.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Sep 2020–Dec 2020</span><div><p class="cv-t">Frontend Intern</p><p class="cv-o">Shanghai Fuao Construction Technology Co., Ltd.</p><p class="cv-d">Designed and built frontend pages in Vue.js and maintained the C++ system of a medical platform.</p></div></div>
+      <div class="cv-row"><span class="cv-sec">Honors</span><span class="cv-date">Fall 2026</span><div><p class="cv-t">Duane and Betty Bohnstedt Endowed Scholarship</p><p class="cv-o">ArtCenter College of Design</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Fall 2025–Present</span><div><p class="cv-t">ArtCenter Graduate Scholarship</p><p class="cv-o">ArtCenter College of Design</p><p class="cv-d">Awarded each term.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Gallery Exhibition</p><p class="cv-o">ArtCenter College of Design</p><p class="cv-d">Posters for Harbor Freight, Digital Detox and Mori selected for exhibition in the ArtCenter gallery.</p></div></div>
+      <div class="cv-row"><span class="cv-sec">Involvement</span><span class="cv-date">Nov 2022–Dec 2023</span><div><p class="cv-t">Volunteer Editor</p><p class="cv-o">Peking University Japanese Group</p><p class="cv-d">Translated the Japanese children’s book Kirakira Sagashi into Chinese (published June 2024), and managed the group’s WeChat account and monthly newsletter.</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Jun 2018–Sep 2019</span><div><p class="cv-t">Student Mentor</p><p class="cv-o">Software Engineering, East China Normal University</p><p class="cv-d">Organized orientation sessions and workshops for new students.</p></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-playground">
+    <h1 class="lead">Playground</h1>
+    <div class="pg-grid" id="pg"></div>
+  </section>
+</main>
+
+<footer><span>Mabel Chen © 2026</span><span>All rights reserved.</span></footer>
+<div class="cursor" aria-hidden="true"></div>
+
+<script>
+/* =====================================================================
+   CONTENT — edit here. Each project's images live in img/<dir>/:
+   cover.jpg plus the files listed in "images".
+   ===================================================================== */
+const PROJECTS = {
+  'mori': {
+    "title": "Mori",
+    "category": "Brand Identity, Packaging Design",
+    "year": "2026",
+    "services": [
+      "Brand Identity",
+      "Packaging Design",
+      "Product Design",
+      "Website Design"
+    ],
+    "thanks": "Pamela Olecki",
+    "desc": [
+      "Mori is a lifestyle brand built around the Moss Kit, a DIY terrarium for people who live and work in the city. It sits between work and rest, designed to fit seamlessly into the scenes of a day: an office desk, a bedside table, a short break. It asks for very little care.",
+      "Wellness should be easy to keep up. A few minutes of attention, a little growth each week. I designed the kit, packaging, website and visual language around that idea."
+    ],
+    "chapters": [
+      {
+        "h": "Starting point",
+        "p": [
+          "I interviewed 14 office workers and plant lovers about where rest fits into their day. They wanted something living nearby that doesn’t take time or energy they don’t have."
+        ]
+      },
+      {
+        "h": "Naming",
+        "p": [
+          "I wanted a name that joined living and forest, and was easy to say in any language. Mori, Japanese for forest, does both: a small forest you can keep on a desk."
+        ]
+      },
+      {
+        "h": "Growth 01: The kit",
+        "p": [
+          "Mori sells direct, so the product has to explain itself. I designed the kit, packaging and instruction card so anyone can build a terrarium in one sitting."
+        ]
+      },
+      {
+        "h": "Growth 02: Online",
+        "p": [
+          "Next, the brand needs a voice. A website handles sales, while social posts show the kit on real desks, so people see where it fits before they buy."
+        ]
+      },
+      {
+        "h": "Growth 03: Pop-up and collaboration",
+        "p": [
+          "Then Mori moves into shared spaces. Pop-up stores in open offices let people try the kit with a guided demo, and a collaboration with a lifestyle partner carries it beyond the desk."
+        ]
+      },
+      {
+        "h": "Merch",
+        "p": [
+          "Merch and seasonal editions turn the brand into gifts and everyday objects. Each piece keeps the same greens and quiet type, so it reads as part of one small forest."
+        ]
+      }
+    ],
+    "dir": "mori",
+    "lead": "brandvideo.mp4",
+    "leadRight": true,
+    "seqSpeed": 1200,
+    "images": [
+      "01"
+    ],
+    "layout": [
+    {"two": ["02", "03"]}, "chap",
+    {"flip": ["04", "05"]}, {"full": ["06"]},
+    {"p-row": ["chap", "seq=07,08,09,10,11,12,13,14,15"]},
+    {"p-row": ["seq=16,16a.png,16b.png,16c.png,17", "chap"]},
+    {"flip": ["seq=19,20,21", "chap"]},
+    {"p-row": ["chap", "seq=22,23,24,25,26,27,28"]}
+  ]
+  },
+  'el-camino-real': {
+    title: 'El Camino Real', category: 'Book Design', year: '2026',
+    services: ['Book Design', 'Research and Writing', 'Typography'],
+    desc: [
+      "El Camino Real: A Perfectly Historic Road is a book about a road most Californians pass every day, and about how its history was made. It starts at a green mission bell by the roadside and works backward.",
+      "It is written for readers who, like me, drove past the bells for years without asking where they came from."
+    ],
+    chapters: [
+      { h: "Research", p: ["I began where most people do: at a roadside bell, accepting the story that it marks a Spanish mission trail. The further I read, the less that story held. The bells went up after 1906, and the continuous trail barely existed."] },
+      { h: "Structure", p: ["So I built the book the way my research unfolded: it opens in the present, rewinds to before 1769, then returns to today. The road stays the same; the way you read it doesn’t."] },
+      { h: "Two voices", p: ["The present, including my own voice, is set in orange Optima. The archive is set in black serif. The two often share a spread, so readers always know which history they are standing in."] },
+      { h: "The title", p: ["The road is historic, not historical: it was declared important rather than lived that way. “Perfectly” is the giveaway. The story was too tidy to be true."] }
+    ],
+    dir: 'el-camino-real', openFull: true, seqSpeed: 800, images: [],
+    layout: [
+      {"p-row": ["spread-c", "seq=flip-01,flip-02,flip-03,flip-04,flip-05,flip-06,flip-07,flip-08,flip-09,flip-10,flip-11"]}, {"flip": ["spread-e", "photo-02.png"]}, "chap",
+      {"p-row": ["spread-i", "spread-j"]}, {"flip": ["seq=flip-map-12,flip-map-13,flip-map-14,flip-map-15,flip-map-16,flip-map-17,flip-map-18,flip-map-19,flip-map-20,flip-map-21,flip-map-22,flip-map-23,flip-map-24", "photo-01.png"]}, "chap",
+      {"flip": ["spread-m", "spread-n"]}, "chap"
+    ]
+  },
+  'punk': {
+    title: 'Punk', category: 'Newspaper Design', year: '2025',
+    services: ['Newspaper Design', 'Editorial Research', 'Typography'],
+    thanks: 'Brad Bartlett',
+    desc: [
+      "A newspaper on British punk: the unemployed youth behind it, its key figures, its DIY zines, and its roots in Dada and the Situationist International.",
+      "Instead of speaking in punk’s own voice, I looked at it from the outside. A calm, rational typographic system presents punk as what it was: a deliberate cultural and political movement."
+    ],
+    chapters: [
+      { h: "Starting point", p: ["I decided early not to explain punk the punk way. Ransom-note letters and torn paper have become a costume. I looked at it as an outsider instead: who were these kids, and what were they pushing against?"] },
+      { h: "Building the system", p: ["I set the history in a strict grid first, then allowed one loud choice: pink, a nod to punk’s taste for provocation and parody, and its refusal to mean just one thing."] },
+      { h: "The newspaper", p: ["The brief called for a newspaper, and it suits an outsider’s view. In 1976, most of Britain met punk through tabloid headlines; putting it back on newsprint, calmly, answers them."] }
+    ],
+    dir: 'punk', open: ['01', 'seq:flip:12'], images: ['02','photo-01.JPG','04','05','photo-02.JPG']
+  },
+  'harbor-freight': {
+    title: 'Harbor Freight', category: 'Brand Identity, Retail Design', year: '2025',
+    services: ['Brand Identity', 'Retail Design', 'Brand Strategy'],
+    thanks: 'Carolina Trigo',
+    desc: [
+      "Harbor Freight is a tool brand for people who fix, build and solve problems, held back by a reputation for being cheap and a cluttered store experience.",
+      "The rebrand keeps the industrial boldness contractors trust, while a clearer store and workshop welcome a new audience: non-professional makers."
+    ],
+    chapters: [
+      { h: "Process", p: ["I walked the stores as a first-time maker would. The cheap image came as much from the clutter as from the tools, so I kept the bold identity contractors trust and redesigned the store around clearer wayfinding."] }
+    ],
+    dir: 'harbor-freight', images: ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16']
+  },
+  'kitbit': {
+    title: 'Kitbit', category: 'Character Design, Poster Series', year: '2024',
+    services: ['Character Design', 'Poster Series', '3D Printing'],
+    desc: [
+      "Kitbit is a character that asks why characters become emotional anchors and cultural icons, somewhere between nostalgia, consumerism and personal identity.",
+      "Instead of only designing it, I followed its whole life."
+    ],
+    chapters: [
+      { h: "Process", p: ["I started with sketches, modeled the character, and 3D-printed it as a figure. Then I gave it a store launch with a poster series, and followed it through to its quiet disappearance."] }
+    ],
+    dir: 'kitbit', images: ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19']
+  },
+  'ink-life': {
+    title: 'Ink Life', category: 'Magazine Design', year: '2026',
+    services: ['Magazine Design', 'Editorial Writing', 'Interviews'],
+    thanks: 'Stephen Serrato',
+    desc: [
+      "Ink Life is a fictional magazine about player culture in Splatoon, built around three players who each play the game differently.",
+      "It treats the way people play as visual and social culture worth recording."
+    ],
+    chapters: [
+      { h: "Process", p: ["I interviewed the three players, then built each story from our conversations and their own in-game screenshots. The editorial design turns those fleeting moments into an archive."] }
+    ],
+    dir: 'ink-life', images: ['01','02','03','04']
+  },
+  'miffy-trap': {
+    title: 'Miffy Trap', category: 'Typeface Design', year: '2026',
+    services: ['Typeface Design'],
+    thanks: 'Hampton Dunlap',
+    desc: [
+      "Miffy Trap is a contemporary sans serif with even strokes, open forms and distinctive ink traps. Sharp cuts interrupt its clean structure, balancing clarity with character.",
+      "It reads as functional at small sizes and shows more personality the larger it gets."
+    ],
+    chapters: [
+      { h: "Process", p: ["I began with the ink trap, a cut meant to solve a printing problem, and treated it as a feature. I drew a few key letters first, then built the alphabet from them until the traps stayed quiet in text and came forward in headlines."] }
+    ],
+    dir: 'miffy-trap', images: ['01','02','03','04','05','06']
+  },
+  'garden-diaries': {
+    title: 'Garden Diaries', category: 'Booklet Design, Screen Printing', year: '2024',
+    services: ['Booklet Design', 'Screen Printing', 'Binding'],
+    desc: [
+      "Garden Diaries began with the flowerbeds in my residential community, and how their plants shift in color, density and presence through the seasons.",
+      "Five small booklets hold that record, so time is held as well as read."
+    ],
+    chapters: [
+      { h: "Process", p: ["Season by season, I recorded the same flowerbeds. I screen-printed the plants on tracing paper over printed soil and paving, and bound the five booklets with string into one timeline."] }
+    ],
+    dir: 'garden-diaries', images: ['gd-01','gd-02','gd-03','gd-04','gd-05','gd-06','gd-07','gd-08','gd-09','gd-10','gd-11','gd-12','gd-13','gd-14','gd-15','gd-16','gd-17','gd-18','gd-19','gd-20','gd-21','gd-22','gd-23','gd-24','gd-25','gd-26','gd-27']
+  },
+  'random-glyph': {
+    title: 'Random Glyph', category: 'Typeface Design', year: '2025',
+    services: ['Typeface Design'], desc: [],
+    dir: 'random-glyph', images: ['01','02','03']
+  }
+};
+Object.values(PROJECTS).forEach((p) => { p.cover = p.cover || 'cover'; p.chapters = p.chapters || []; });
+
+/* Home: every project, read left to right, row by row. The first row is the three case studies. */
+const HOME = ['mori', 'el-camino-real', 'punk', 'harbor-freight', 'kitbit', 'ink-life', 'miffy-trap', 'garden-diaries', 'random-glyph'];
+const ORDER = HOME;
+
+/* Playground: the smaller experiments. */
+const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16', '17', 'cover',
+  'gd-12', 'gd-13', 'gd-14', 'gd-15', 'gd-16', 'gd-17', 'gd-18', 'gd-20', 'gd-24', 'gd-27', 'mt-02', 'mt-03']
+  .map((f) => 'img/playground/' + encodeURIComponent(f) + '.jpg');
+
+/* ===================================================================== */
+(() => {
+  const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const src = (k, f) => `img/${PROJECTS[k].dir}/${/\.[a-z0-9]+$/i.test(f) ? f : f + '.jpg'}`;  // names with an extension are used as-is
+  const frame = (s, alt) => `<span class="fr" data-src="${esc(s)}"><img src="${esc(s)}" alt="${esc(alt)}" decoding="async" onerror="this.parentNode.classList.add('missing');this.remove()"></span>`;
+
+  /* ---- reveal on scroll ---- */
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const el = e.target; io.unobserve(el);
+    // stagger items that enter together
+    const t = (performance.now() - (io._t || 0)) < 120 ? (io._n = (io._n || 0) + 1) : (io._n = 0);
+    io._t = performance.now();
+    const go = () => setTimeout(() => el.classList.add('in'), reduce ? 0 : t * 140);
+    const vid = $('video', el);
+    if (vid && vid.readyState < 2) { vid.addEventListener('loadeddata', go, { once: true }); vid.addEventListener('error', go, { once: true }); return; }
+    const im = $('img', el);
+    // wait for the picture itself, so the wipe reveals an image rather than an empty frame
+    if (im && !im.complete) { im.addEventListener('load', go, { once: true }); im.addEventListener('error', go, { once: true }); } else go();
+  }), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  // portrait images in a full-width row take the right-hand 63%, as soon as their size is known
+  const tall = (el) => { const im = $('img', el); if (!im) return;
+    const f = () => { if (el.parentNode.classList.contains('full') && !el.parentNode.classList.contains('bleed') && im.naturalHeight > im.naturalWidth * .9) el.classList.add('tall'); };
+    im.complete ? f() : im.addEventListener('load', f, { once: true }); };
+  let introDone = Promise.resolve();
+  const watch = (root) => { $$('.fig', root).forEach(tall); $$('.rv', root).forEach((el) => el.classList.remove('in'));
+    introDone.then(() => $$('.rv', root).forEach((el) => io.observe(el))); };
+
+  /* ---- slight drift inside each frame while scrolling ---- */
+  let ticking = false;
+  const drift = () => {
+    ticking = false;
+    const vh = innerHeight;
+    $$('.view.on .rv.in .fr img').forEach((im) => {
+      const r = im.parentNode.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      const t = (r.top + r.height / 2 - vh / 2) / vh;  // -1 … 1
+      im.style.setProperty('--py', (t * -2.5).toFixed(2) + '%');
+    });
+  };
+  if (!reduce) addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(drift); } }, { passive: true });
+
+  // sound toggle: autoplay has to start muted, so the viewer turns sound on
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.snd'); if (!b) return;
+    const v = b.parentNode.querySelector('video'); v.muted = !v.muted; if (!v.muted) v.play();
+    b.textContent = v.muted ? 'Sound on' : 'Sound off'; b.setAttribute('aria-pressed', String(!v.muted));
+  });
+  // image sequences loop like a gif once every frame is loaded
+  let seqTimers = [];
+  const playSeqs = (root) => $$('.seq', root).forEach((fg) => {
+    const ims = $$('img', fg);
+    Promise.all(ims.map((im) => im.decode ? im.decode().catch(() => {}) : null)).then(() => {
+      if (!fg.isConnected) return;
+      let n = 0;
+      seqTimers.push(setInterval(() => { ims[n].classList.remove('on'); n = (n + 1) % ims.length; ims[n].classList.add('on'); }, +fg.dataset.speed || 450));
+    });
+  });
+  const grid = (box, items) => { box.innerHTML = items.join(''); watch(box); };
+
+  // click: the image spans two columns; anything that no longer fits moves to the next row (animated)
+  const pg = $('#pg');
+  pg.addEventListener('click', (e) => {
+    const it = e.target.closest('.pg-item'); if (!it) return;
+    const items = $$('.pg-item', pg), before = new Map(items.map((el) => [el, el.getBoundingClientRect()]));
+    const on = !it.classList.contains('big');
+    it.classList.toggle('big', on); it.setAttribute('aria-pressed', String(on));
+    if (reduce) return;
+    items.forEach((el) => {
+      const a = before.get(el), b = el.getBoundingClientRect();
+      if (!b.width) return;
+      const dx = a.left - b.left, dy = a.top - b.top, sx = a.width / b.width;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < .01) return;
+      el.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${sx})` }, { transform: 'none' }],
+        { duration: 700, easing: 'cubic-bezier(.19, 1, .22, 1)' });
+    });
+  });
+
+  const homeTiles = () => HOME.map((k) => {
+    const p = PROJECTS[k];
+    return `<a class="tile rv" href="#${k}">${frame(src(k, p.cover), p.title)}<span class="cap"><b>${esc(p.title)}</b><br><u>${esc(p.category)}</u></span></a>`;
+  });
+  const pgTiles = () => PLAY.map((u, i) => `<button class="pg-item rv" type="button" aria-label="Enlarge image ${i + 1}" aria-pressed="false">${frame(u, '')}</button>`);
+
+  /* ---- project page ---- */
+  const arrow = '<svg class="arr" viewBox="0 0 26 26" aria-hidden="true"><path d="M2 13h21M15 5l8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
+  // only the opening images (before the first text block) get the reveal motion
+  const vframe = (u) => `<span class="fr"><video src="${esc(u)}" autoplay muted loop playsinline preload="auto" aria-label="Brand video"></video><button class="snd" type="button" aria-pressed="false">Sound on</button></span>`;
+  const seqFrames = (k, f) => {
+    if (f.startsWith('seq=')) return f.slice(4).split(',').map((x) => src(k, x.trim()));
+    const [, name, n] = f.split(':'); return Array.from({ length: +n }, (_, j) => `img/${PROJECTS[k].dir}/${name}-${String(j + 1).padStart(2, '0')}.jpg`); };
+  const fig = (k, f, i, motion) => f.startsWith('seq')
+    ? `<figure class="fig seq" data-speed="${PROJECTS[k].seqSpeed || 450}" style="margin:0"><span class="fr">${seqFrames(k, f).map((u, j) => `<img src="${esc(u)}" alt="${j ? '' : esc(PROJECTS[k].title) + ', flip-through'}"${j ? ' aria-hidden="true"' : ''} class="${j ? '' : 'on'}">`).join('')}</span></figure>`
+    : `<figure class="fig${motion ? ' rv' : ''}" style="margin:0">${
+    /\.mp4$/.test(f) ? vframe(`img/${PROJECTS[k].dir}/${f}`) : frame(src(k, f), PROJECTS[k].title + ', image ' + i)}</figure>`;
+  const chapter = (c) => `<section class="chap"><h3>${esc(c.h)}</h3><div style="grid-column:3">${c.p.map((t) => `<p>${esc(t)}</p>`).join('')}</div></section>`;
+
+  const tcell = (c) => c ? `<div class="tcell"><h3>${esc(c.h)}</h3>${c.p.map((t) => `<p>${esc(t)}</p>`).join('')}</div>` : '<div></div>';
+  const project = (k) => {
+    const p = PROJECTS[k], im = p.open ? [...p.open, ...p.images] : [p.lead || p.cover, ...p.images];
+    if (p.leadRight && im.length > 1) [im[0], im[1]] = [im[1], im[0]];  // lead media in the large right slot
+    let n = 0, motion = true; const F = (f) => fig(k, f, ++n, motion);
+    const rows = [];
+    // opening: small left + large right, as in the reference
+    // opening: one full-bleed image (openFull) or small left + large right, as in the reference
+    const one = p.openFull || im.length < 2;
+    rows.push(one ? `<div class="p-row full${p.openFull ? ' bleed' : ''}">${F(im[0])}</div>` : `<div class="p-row">${F(im[0])}${F(im[1])}</div>`);
+    motion = false;
+    if (p.chapters[0]) rows.push(chapter(p.chapters[0]));
+    if (p.layout) {
+      let c = 1;
+      p.layout.forEach((r) => {
+        if (r === 'chap') { if (p.chapters[c]) rows.push(chapter(p.chapters[c++])); return; }
+        const [kind, items] = Object.entries(r)[0];
+        rows.push(`<div class="p-row ${kind === 'p-row' ? '' : kind}">${items.map((x) => x === 'chap' ? tcell(p.chapters[c++]) : x.includes('|') ? `<div class="stack">${x.split('|').map(F).join('')}</div>` : F(x)).join('')}</div>`);
+      });
+      im.length = 0;
+    }
+    // no full-width rows: always two side by side, alternating small|large and large|small
+    let i = one ? 1 : 2, pattern = ['', 'flip'], c = 1, pi = 0;
+    while (i < im.length) {
+      const kind = pattern[pi % pattern.length]; pi++;
+      if (i + 1 < im.length) { rows.push(`<div class="p-row ${kind}">${F(im[i++])}${F(im[i++])}</div>`); }
+      else { rows.push(`<div class="p-row"><div></div>${F(im[i++])}</div>`); }
+      if (c < p.chapters.length && (pi % 2 === 0)) rows.push(chapter(p.chapters[c++]));
+    }
+    if (!p.layout) while (c < p.chapters.length) rows.push(chapter(p.chapters[c++]));
+    const at = ORDER.indexOf(k), nx = ORDER[(at + 1) % ORDER.length], pv = ORDER[(at - 1 + ORDER.length) % ORDER.length];
+    return `
+      <div class="p-head">
+        <div><h1 class="p-title">${esc(p.title)}</h1></div>
+        <dl class="meta">
+          <dt>Services</dt><dd>${p.services.map(esc).join('<br>')}</dd>
+          ${p.thanks ? `<dt>Special thanks</dt><dd>${esc(p.thanks)}</dd>` : ''}
+        </dl>
+        <div class="desc">${p.desc.length ? `<h2>Description</h2>${p.desc.map((t) => `<p>${esc(t)}</p>`).join('')}` : ''}</div>
+      </div>
+      ${rows.join('\n')}
+      <nav class="next" aria-label="More projects">
+        <a href="#${pv}"><span>Previous project</span><b>${esc(PROJECTS[pv].title)}</b></a>
+        <a href="#${nx}"><span>Next project</span><b>${esc(PROJECTS[nx].title)}</b></a>
+      </nav>`;
+  };
+
+  /* ---- index list ---- */
+
+
+  /* ---- no widows ---- */
+  const noWidows = (root) => $$('p, h1, h2, h3, dd, .cv-t, .cv-o, .cap b, .cap u, .next b', root).forEach((el) => {
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n, last = null;
+    while ((n = w.nextNode())) if (n.nodeValue.trim()) last = n;
+    if (!last) return;
+    const t = last.nodeValue.replace(/\s+$/, ''), i = t.lastIndexOf(' ');
+    if (i > 0) last.nodeValue = t.slice(0, i) + '\u00a0' + t.slice(i + 1) + last.nodeValue.slice(t.length);
+  });
+  noWidows(document);
+
+  /* ---- cursor ---- */
+  const cur = $('.cursor');
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    addEventListener('mousemove', (e) => { cur.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`; cur.classList.add('on');
+      cur.classList.toggle('hot', !!e.target.closest('a, button')); }, { passive: true });
+    document.addEventListener('mouseleave', () => cur.classList.remove('on'));
+  }
+
+  /* ---- routing ---- */
+  let current = '';
+  const show = () => {
+    const h = (location.hash || '#home').slice(1);
+    const key = PROJECTS[h] ? 'project' : ['about', 'playground'].includes(h) ? h : 'home';
+    $$('.view').forEach((v) => v.classList.toggle('on', v.id === 'v-' + key));
+    const navKey = key === 'project' || h === 'work' ? 'work' : key;
+    $$('.nav a').forEach((a) => { if (a.dataset.k === navKey) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    seqTimers.forEach(clearInterval); seqTimers = [];
+    if (key === 'project') { $('#v-project').innerHTML = project(h); watch($('#v-project')); playSeqs($('#v-project')); document.title = PROJECTS[h].title + ' — Mabel Chen'; }
+    else document.title = 'Mabel Chen — Graphic Designer';
+    if (key === 'home') { grid($('#works'), homeTiles()); }
+    if (key === 'playground') {
+      grid($('#pg'), pgTiles());
+      const items = $$('.pg-item', $('#pg')), picks = new Set();
+      while (picks.size < Math.min(3, items.length)) picks.add(Math.floor(Math.random() * items.length));
+      picks.forEach((i) => { items[i].classList.add('big'); items[i].setAttribute('aria-pressed', 'true'); });
+    }
+    if (h === 'work') { requestAnimationFrame(() => $('#works').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' })); }
+    else if (current !== h) scrollTo(0, 0);
+    noWidows($('.view.on'));
+    current = h;
+  };
+  addEventListener('hashchange', show);
+
+  /* ---- landing intro: logo centred → header; quote large, line by line → its place on the right ---- */
+  const ov = $('.intro');
+  const onHome = !location.hash || location.hash === '#home';
+  if (onHome && !reduce) {
+    ov.hidden = false;
+    document.documentElement.classList.add('intro-lock');
+    let release; introDone = new Promise((r) => (release = r));
+    show();
+    history.scrollRestoration = 'manual'; scrollTo(0, 0);
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(runIntro));
+
+    function runIntro() {
+      const vw = innerWidth, vh = innerHeight, ease = 'cubic-bezier(.65, 0, .35, 1)';
+      const brand = $('.brand svg'), stmt = $('.statement');
+      const lr = brand.getBoundingClientRect(), qr = stmt.getBoundingClientRect();
+
+      // logo clone, laid exactly over the header logo
+      const logo = brand.cloneNode(true); logo.classList.add('i-logo');
+      Object.assign(logo.style, { left: lr.left + 'px', top: lr.top + 'px', width: lr.width + 'px', height: lr.height + 'px' });
+      // quote clone, laid exactly over the real quote (same width, so the same line breaks)
+      const cs = getComputedStyle(stmt), quote = stmt.cloneNode(true); quote.classList.add('i-quote');
+      Object.assign(quote.style, { left: qr.left + 'px', top: qr.top + 'px', width: qr.width + 'px', maxWidth: 'none',
+        fontSize: cs.fontSize, lineHeight: cs.lineHeight, letterSpacing: cs.letterSpacing, opacity: 0 });
+      $$('.ln', quote).forEach((ln) => { ln.innerHTML = `<i>${ln.innerHTML}</i>`; });
+      ov.append(logo, quote);
+
+      const centre = (r, s) => `translate(${vw / 2 - (r.left + r.width / 2)}px, ${vh / 2 - (r.top + r.height / 2)}px) scale(${s})`;
+      const ls = Math.min(vw * .46 / lr.width, vh * .3 / lr.height);
+      const qs = Math.min(vw * .88 / qr.width, vh * .72 / qr.height);
+      const anims = [];
+      const A = (el, kf, o) => { const a = el.animate(kf, { fill: 'both', ...o }); anims.push(a); return a; };
+
+      logo.style.visibility = 'visible';
+      A(logo, [{ transform: centre(lr, ls), opacity: 0 }, { transform: centre(lr, ls), opacity: 1 }], { duration: 600, easing: 'ease-out' });
+      // logo fades out where it is; the quote follows
+      A(logo, [{ transform: centre(lr, ls), opacity: 1 }, { transform: centre(lr, ls), opacity: 0 }], { delay: 1400, duration: 700, easing: 'ease-in' });
+      const T0 = 2100;
+      A(quote, [{ opacity: 1, transform: centre(qr, qs) }, { opacity: 1, transform: centre(qr, qs) }], { delay: T0, duration: 1 });
+      $$('.ln > i', quote).forEach((el, i) => A(el, [{ clipPath: 'inset(-0.25em 100% -0.35em 0)' }, { clipPath: 'inset(-0.25em 0 -0.35em 0)' }],
+        { delay: T0 + 100 + i * 420, duration: 900, easing: 'cubic-bezier(.19, 1, .22, 1)' }));
+      const T1 = T0 + 100 + 3 * 420 + 900 + 500;
+      A(quote, [{ opacity: 1, transform: centre(qr, qs) }, { opacity: 1, transform: 'none' }], { delay: T1, duration: 1200, easing: ease });
+      const fade = A(ov, [{ backgroundColor: getComputedStyle(ov).backgroundColor }, { backgroundColor: 'transparent' }], { delay: T1 + 1150, duration: 500 });
+
+      let ended = false;
+      const end = () => {
+        if (ended) return; ended = true;
+        anims.forEach((a) => { try { a.finish(); } catch (e) {} });
+        ov.remove(); document.documentElement.classList.remove('intro-lock'); release();
+      };
+      fade.finished.then(end);
+      // click, tap, scroll or key skips the intro
+      ['click', 'wheel', 'touchstart', 'keydown'].forEach((t) => addEventListener(t, end, { once: true, passive: true }));
+    }
+  } else {
+    ov.remove();
+    show();
+  }
+})();
+</script>
+</body>
+</html>
