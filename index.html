@@ -78,13 +78,14 @@
   .fr.missing::after { content: attr(data-src); position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: var(--mute); }
 
   /* ---------- project page (image 2 reference) ---------- */
-  .p-head { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: clamp(48px, 8vh, 96px) 0 clamp(28px, 4vh, 40px); }
+  .p-head { --tfs: clamp(44px, 4.6vw, 84px); display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: clamp(48px, 8vh, 96px) 0 clamp(28px, 4vh, 40px); }
   .p-head .arr { width: 26px; height: 26px; margin-bottom: 14px; color: var(--mute); }
-  .p-title { margin: 0; font-size: clamp(44px, 4.6vw, 84px); line-height: .95; letter-spacing: -0.04em; font-weight: 500; }
-  .meta { margin: 0; font-size: 13px; line-height: 1.4; padding-top: 40px; }
+  .p-title { margin: 0; font-size: var(--tfs); line-height: .95; letter-spacing: -0.04em; font-weight: 500; }
+  /* labels' cap height lines up with the title's: the title's cap sits .12em below its box, a label's 4.3px below its own */
+  .meta { margin: 0; font-size: 13px; line-height: 1.4; padding-top: calc(var(--tfs) * .12 - 4.3px); }
   .meta dt { color: var(--mute); font-size: 11.5px; margin-bottom: 6px; }
   .meta dd { margin: 0 0 22px; }
-  .desc { padding-top: 40px; font-size: 14px; line-height: 1.42; max-width: 62ch; }
+  .desc { padding-top: calc(var(--tfs) * .12 - 4.3px); font-size: 14px; line-height: 1.42; max-width: 62ch; }
   .desc h2 { margin: 0 0 6px; font-size: 11.5px; font-weight: 400; color: var(--mute); }
   .desc p + p { margin-top: 1.15em; }
 
@@ -186,7 +187,7 @@
     .cv-sec:empty + .cv-date { grid-column: 1 / -1; }
     .cv-date { justify-self: end; text-align: right; }
     .cv-sec:not(:empty) { margin-bottom: 14px; }
-    .desc { padding-top: 40px; }
+    .meta, .desc { padding-top: 40px; }
     .statement { grid-column: 1 / -1; margin-top: 18px; }
   }
   @media (max-width: 600px) {
