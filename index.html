@@ -20,6 +20,7 @@
   html, body { margin: 0; }
   html { scroll-behavior: smooth; scrollbar-gutter: stable; }
   .statement .ln { display: block; }
+  .statement .ln, .statement .ln > i { text-wrap: balance; }   /* a line that wraps on a phone never leaves one word alone */
 
   /* ---------- landing intro ---------- */
   .intro { position: fixed; inset: 0; z-index: 50; background: var(--bg); }
@@ -99,7 +100,8 @@
 
   .chap { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: clamp(72px, 12vh, 140px) 0; }
   .chap h3 { grid-column: 2; margin: 0; font-size: 11.5px; font-weight: 400; color: var(--mute); padding-top: .45em; }
-  .chap p { grid-column: 3; font-size: clamp(19px, 1.55vw, 26px); line-height: 1.22; letter-spacing: -0.015em; max-width: 34ch; }
+  .chap-b { grid-column: 3; }
+  .chap p { font-size: clamp(19px, 1.55vw, 26px); line-height: 1.22; letter-spacing: -0.015em; max-width: 34ch; }
   .chap p + p { margin-top: .8em; }
 
   /* previous (left) / next (right): small label above the big title */
@@ -177,12 +179,14 @@
     .nav { grid-column: 1 / -1; grid-row: 2; }
     .p-head, .chap, .about { grid-template-columns: 1fr 1fr; }
     .p-head > :first-child, .chap h3, .about .body { grid-column: 1 / -1; }
-    .chap p { grid-column: 1 / -1; margin-top: 10px; }
+    .chap-b { grid-column: 1 / -1; margin-top: 10px; }
     .about dl { grid-column: 1 / -1; grid-row: 2; margin-top: 40px; }
     .cv-row { grid-template-columns: 1fr 1fr; row-gap: 6px; }
     .cv-row > div { grid-column: 1 / -1; }
     .cv-sec:empty { display: none; }
     .cv-sec:empty + .cv-date { grid-column: 1 / -1; }
+    .cv-date { justify-self: end; text-align: right; }
+    .cv-sec:not(:empty) { margin-bottom: 14px; }
     .desc { padding-top: 40px; }
     .statement { grid-column: 1 / -1; margin-top: 18px; }
   }
@@ -553,7 +557,7 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
     ? `<figure class="fig seq" data-speed="${PROJECTS[k].seqSpeed || 450}" style="margin:0"><span class="fr">${seqFrames(k, f).map((u, j) => `<img src="${esc(u)}" alt="${j ? '' : esc(PROJECTS[k].title) + ', flip-through'}"${j ? ' aria-hidden="true"' : ''} class="${j ? '' : 'on'}">`).join('')}</span></figure>`
     : `<figure class="fig${motion ? ' rv' : ''}" style="margin:0">${
     /\.mp4$/.test(f) ? vframe(`img/${PROJECTS[k].dir}/${f}`) : frame(src(k, f), PROJECTS[k].title + ', image ' + i)}</figure>`;
-  const chapter = (c) => `<section class="chap"><h3>${esc(c.h)}</h3><div style="grid-column:3">${c.p.map((t) => `<p>${esc(t)}</p>`).join('')}</div></section>`;
+  const chapter = (c) => `<section class="chap"><h3>${esc(c.h)}</h3><div class="chap-b">${c.p.map((t) => `<p>${esc(t)}</p>`).join('')}</div></section>`;
 
   const tcell = (c) => c ? `<div class="tcell"><h3>${esc(c.h)}</h3>${c.p.map((t) => `<p>${esc(t)}</p>`).join('')}</div>` : '<div></div>';
   const project = (k) => {
