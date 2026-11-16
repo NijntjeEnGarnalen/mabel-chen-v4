@@ -465,7 +465,7 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const src = (k, f) => `img/${PROJECTS[k].dir}/${/\.[a-z0-9]+$/i.test(f) ? f : f + '.jpg'}`;  // names with an extension are used as-is
-  const frame = (s, alt) => `<span class="fr" data-src="${esc(s)}"><img src="${esc(s)}" alt="${esc(alt)}" decoding="async" onerror="this.parentNode.classList.add('missing');this.remove()"></span>`;
+  const frame = (s, alt) => `<span class="fr" data-src="${esc(s)}"><img src="${esc(s)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('missing');this.remove()"></span>`;
 
   /* ---- reveal on scroll ---- */
   const io = new IntersectionObserver((es) => es.forEach((e) => {
@@ -548,12 +548,12 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
   /* ---- project page ---- */
   const arrow = '<svg class="arr" viewBox="0 0 26 26" aria-hidden="true"><path d="M2 13h21M15 5l8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
   // only the opening images (before the first text block) get the reveal motion
-  const vframe = (u) => `<span class="fr"><video src="${esc(u)}" autoplay muted loop playsinline preload="auto" aria-label="Brand video"></video><button class="snd" type="button" aria-pressed="false">Sound on</button></span>`;
+  const vframe = (u) => `<span class="fr"><video src="${esc(u)}" autoplay muted loop playsinline preload="metadata" aria-label="Brand video"></video><button class="snd" type="button" aria-pressed="false">Sound on</button></span>`;
   const seqFrames = (k, f) => {
     if (f.startsWith('seq=')) return f.slice(4).split(',').map((x) => src(k, x.trim()));
     const [, name, n] = f.split(':'); return Array.from({ length: +n }, (_, j) => `img/${PROJECTS[k].dir}/${name}-${String(j + 1).padStart(2, '0')}.jpg`); };
   const fig = (k, f, i, motion) => f.startsWith('seq')
-    ? `<figure class="fig seq" data-speed="${PROJECTS[k].seqSpeed || 450}" style="margin:0"><span class="fr">${seqFrames(k, f).map((u, j) => `<img src="${esc(u)}" alt="${j ? '' : esc(PROJECTS[k].title) + ', flip-through'}"${j ? ' aria-hidden="true"' : ''} class="${j ? '' : 'on'}">`).join('')}</span></figure>`
+    ? `<figure class="fig seq" data-speed="${PROJECTS[k].seqSpeed || 450}" style="margin:0"><span class="fr">${seqFrames(k, f).map((u, j) => `<img src="${esc(u)}" alt="${j ? '' : esc(PROJECTS[k].title) + ', flip-through'}"${j ? ' aria-hidden="true"' : ''} class="${j ? '' : 'on'}" loading="lazy" decoding="async">`).join('')}</span></figure>`
     : `<figure class="fig${motion ? ' rv' : ''}" style="margin:0">${
     /\.mp4$/.test(f) ? vframe(`img/${PROJECTS[k].dir}/${f}`) : frame(src(k, f), PROJECTS[k].title + ', image ' + i)}</figure>`;
   const chapter = (c) => `<section class="chap"><h3>${esc(c.h)}</h3><div class="chap-b">${c.p.map((t) => `<p>${esc(t)}</p>`).join('')}</div></section>`;
