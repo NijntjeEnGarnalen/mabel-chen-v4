@@ -26,7 +26,7 @@
   .intro.done { pointer-events: none; }
   .intro .i-logo, .intro .i-quote { position: fixed; margin: 0; transform-origin: 50% 50%; will-change: transform; }
   .intro .i-logo { color: var(--fg); visibility: hidden; }
-  .intro .i-quote .ln > i { font-style: normal; display: inline-block; clip-path: inset(-0.25em 100% -0.35em 0); }
+  .intro .i-quote .ln > i { font-style: normal; display: inline-block; opacity: 0; }
   html.intro-lock, html.intro-lock body { overflow: hidden; }
   body { background: var(--bg); color: var(--fg); font-family: 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.35; -webkit-font-smoothing: antialiased; padding-bottom: env(safe-area-inset-bottom, 0px); }
   a { color: inherit; text-decoration: none; }
@@ -38,7 +38,17 @@
   .hdr { position: sticky; top: 0; z-index: 20; background: var(--bg); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: calc(14px + env(safe-area-inset-top, 0px)) var(--pad) 14px; }
   .brand { justify-self: start; display: inline-flex; align-items: center; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
   .brand svg { display: block; height: 19px; width: auto; }
-  .brand:hover { opacity: .6; }
+  /* logo as two cuboids (mabel | .chen) that roll over to the initials m.c */
+  .lg { display: flex; font-size: 19px; height: 1em; }
+  .cube { display: block; height: 100%; perspective: 12em; }
+  .cube-in { position: relative; display: block; height: 100%; transform-style: preserve-3d;
+    transform: translateZ(-.5em); transition: transform .8s cubic-bezier(.65, 0, .35, 1); }
+  .cube + .cube .cube-in { transition-delay: .08s; }
+  .lg .f { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .lg .f svg { display: block; width: 100%; height: 100%; }
+  .lg .f1 { transform: translateZ(.5em); }
+  .lg .f2 { transform: rotateX(-90deg) translateZ(.5em); }
+  .lg.alt .cube-in, .brand:hover .cube-in, .brand:focus-visible .cube-in { transform: translateZ(-.5em) rotateX(90deg); }
   .nav { display: flex; gap: .3em; font-size: 15px; }
   .nav a { color: var(--mute); transition: color .25s ease; }
   .nav a:hover, .nav a[aria-current="page"] { color: var(--fg); }
@@ -52,10 +62,12 @@
 
   /* ---------- home statement ---------- */
   .hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); padding: clamp(40px, 6vh, 72px) 0 clamp(72px, 12vh, 140px); }
-  .statement { grid-column: 4 / -1; justify-self: end; text-align: right; font-size: clamp(32px, 4.1vw, 70px); line-height: 1; letter-spacing: -0.035em; font-weight: 600; max-width: 21ch; }
+  .qm { grid-column: 1 / 3; font-size: clamp(34px, 3.6vw, 60px); font-weight: 600; line-height: .8; }
+  .statement { grid-column: 4 / -1; justify-self: end; text-align: right; font-size: clamp(26px, 3vw, 52px); line-height: 1.02; letter-spacing: -0.035em; font-weight: 600; max-width: none; }
 
   /* ---------- works: three columns, top-aligned; each next image starts one gutter below the one above ---------- */
   /* works: rows of three; every row is top-aligned and starts one gutter below the tallest item above it */
+  #works { scroll-margin-top: clamp(110px, 14vh, 150px); }   /* 'Work' lands with breathing room under the header */
   .works { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--g) * 3) var(--g); align-items: start; }
   @media (max-width: 900px) { .works { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 600px) { .works { grid-template-columns: 1fr; } }
@@ -66,14 +78,14 @@
 
   /* ---------- the scroll reveal: a slow wipe up with the picture settling inside its frame ---------- */
   .fr { display: block; position: relative; overflow: hidden; background: var(--ph); }
-  .fr img, .fr video { display: block; width: 100%; height: auto; transform-origin: 50% 60%; will-change: transform; }
+  .fr img, .fr video { display: block; width: 100%; height: auto; transform-origin: 50% 60%; }
   .rv .fr { clip-path: inset(100% 0 0 0); transition: clip-path 1.7s var(--ease); }
-  .rv .fr img, .rv .fr video { transform: scale(1.16) translateY(var(--py, 0px)); transition: transform 2.2s var(--ease); }
+  .rv .fr img, .rv .fr video { transform: scale(1.08); transition: transform 2s var(--ease); }
   .rv .cap, .rv .num { opacity: 0; transform: translateY(8px); transition: opacity 1s ease .5s, transform 1.2s var(--ease) .5s; }
   .rv.in .fr { clip-path: inset(0 0 0 0); }
-  .rv.in .fr img, .rv.in .fr video { transform: scale(1.08) translateY(var(--py, 0px)); }
+  .rv.in .fr img, .rv.in .fr video { transform: none; }   /* at rest: shown at true size, no upscaling */
   .rv.in .cap, .rv.in .num { opacity: 1; transform: none; }
-  .tile:hover .fr img { transform: scale(1.12) translateY(var(--py, 0px)); }
+  .tile:hover .fr img { transform: scale(1.03); }
   .fr.missing { aspect-ratio: 4 / 5; }
   .fr.missing::after { content: attr(data-src); position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: var(--mute); }
 
@@ -121,16 +133,25 @@
   .peek.on { opacity: 1; }
 
   /* ---------- about / playground ---------- */
-  .lead { margin: clamp(48px, 8vh, 96px) 0 0; font-size: clamp(32px, 4.1vw, 70px); line-height: 1; letter-spacing: -0.035em; font-weight: 600; max-width: 20ch; }
-  .about-lead { max-width: none; }
+  .lead { margin: clamp(48px, 8vh, 96px) 0 0; font-size: clamp(26px, 3vw, 52px); line-height: 1.02; letter-spacing: -0.035em; font-weight: 600; max-width: 20ch; }
+  .about-lead { max-width: none; font-size: clamp(26px, 3vw, 52px); line-height: 1.02; }
   .about { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); margin-top: clamp(56px, 9vh, 110px); }
-  .about .body { grid-column: 3; font-size: 15px; line-height: 1.45; max-width: 60ch; }
+  .about .body { grid-row: 1; grid-column: 3; font-size: 15px; line-height: 1.45; max-width: 60ch; }
   .about .body p + p { margin-top: 1em; }
-  .about dl { grid-column: 2; margin: 0; font-size: 13px; }
+  .about-photo { grid-column: 1; grid-row: 1; margin: 0; max-width: 78%; align-self: start; background: var(--ph); }
+  .about-photo img { display: block; width: 100%; height: auto; }
+  .about-photo.missing { aspect-ratio: 4 / 5; }
+  .about-photo.missing img { display: none; }
+  .about dl { grid-row: 1; grid-column: 2; margin: 0; font-size: 13px; }
   .about dt { color: var(--mute); font-size: 11.5px; margin-bottom: 6px; }
   .about dd { margin: 0 0 22px; }
   .about dd a { text-decoration: underline transparent; text-decoration-thickness: 1px; text-underline-offset: 3px; transition: text-decoration-color .25s ease; }
   .about dd a:hover, .about dd a:focus-visible { text-decoration-color: currentColor; }
+  /* small hint that appears beside the link on hover */
+  .tip { position: relative; }
+  .tip::after { content: attr(data-tip); position: absolute; left: calc(100% + 10px); top: 50%; transform: translate(-4px, -50%);
+    white-space: nowrap; font-size: 11.5px; color: var(--mute); opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease; }
+  .tip:hover::after, .tip:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
   .cv { margin-top: clamp(80px, 13vh, 160px); }
   .cv-row { display: grid; grid-template-columns: minmax(0, 37fr) minmax(0, 17fr) minmax(0, 46fr); column-gap: var(--g); padding: 16px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.42; }
   .cv-sec { font-size: clamp(24px, 2.2vw, 34px); line-height: 1; letter-spacing: -0.03em; font-weight: 600; }
@@ -152,14 +173,16 @@
   .tcell h3 { margin: 0 0 14px; font-size: 11.5px; font-weight: 400; color: var(--mute); }
   .tcell p { font-size: clamp(19px, 1.55vw, 26px); line-height: 1.22; letter-spacing: -0.015em; max-width: 30ch; }
   .p-row.flip .tcell, .p-row:not(.flip):not(.two):not(.full) .tcell:last-child { padding-left: clamp(0px, 4vw, 64px); }
-  .snd { all: unset; position: absolute; right: 14px; bottom: 12px; z-index: 2; font-size: 13px; color: #fff; mix-blend-mode: difference; border-bottom: 1px solid currentColor; line-height: 1.3; }
+  .snd { all: unset; position: absolute; right: 10px; bottom: 10px; z-index: 2; width: 26px; height: 26px; padding: 4px; color: #fff; mix-blend-mode: difference; }
+  .snd svg { display: block; width: 100%; height: 100%; }
+  .snd:focus-visible { outline: 1px solid #fff; outline-offset: 2px; }
   .pg-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--g); align-items: start; }
   .pg-item { all: unset; display: block; transform-origin: 0 0; }
   .pg-item.big { grid-column: span 3; }
   .pg-item:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
   @media (max-width: 900px) { .pg-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 600px) { .pg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  #v-playground .lead { margin-bottom: clamp(48px, 8vh, 96px); }
+  .pg-note { margin: 12px 0 clamp(48px, 8vh, 96px); font-size: 15px; line-height: 1.35; color: var(--mute); max-width: 44ch; }
 
   /* no widows: browsers that support it rebalance lines; the script below also ties the last two words */
   p, dd, .cv-d, .cv-o { text-wrap: pretty; }
@@ -181,6 +204,8 @@
     .p-head > :first-child, .chap h3, .about .body { grid-column: 1 / -1; }
     .chap-b { grid-column: 1 / -1; margin-top: 10px; }
     .about dl { grid-column: 1 / -1; grid-row: 2; margin-top: 40px; }
+    .about .body { grid-row: 1; }
+    .about-photo { grid-column: 1 / -1; grid-row: 3; max-width: 100%; margin-top: 32px; }
     .cv-row { grid-template-columns: 1fr 1fr; row-gap: 6px; }
     .cv-row > div { grid-column: 1 / -1; }
     .cv-sec:empty { display: none; }
@@ -189,11 +214,34 @@
     .cv-sec:not(:empty) { margin-bottom: 14px; }
     .meta, .desc { padding-top: 40px; }
     .statement { grid-column: 1 / -1; margin-top: 18px; }
+    .qm { grid-column: 1 / -1; }
   }
   @media (max-width: 600px) {
     .p-head { grid-template-columns: 1fr; }
     .p-row, .p-row.flip, .p-row.two { grid-template-columns: 1fr; row-gap: var(--g); }
     .list a { grid-template-columns: 1fr 1fr; }
+  }
+  /* phones: tighter vertical rhythm everywhere */
+  @media (max-width: 600px) {
+    .hero { padding: 28px 0 48px; }
+    .works { row-gap: 32px; }
+    .p-head { padding: 20px 0 24px; row-gap: 0; }
+    .p-title { font-size: 44px; }
+    .meta, .desc { padding-top: 22px; }
+    .meta dd { margin-bottom: 0; }
+    .chap { padding: 40px 0; }
+    .chap-b { margin-top: 8px; }
+    .p-row:has(.tcell) { margin: 40px 0; }
+    .tcell h3 { margin-bottom: 8px; }
+    .next { padding-top: 64px; }
+    .lead { margin-top: 24px; }
+    .about { margin-top: 32px; }
+    .about dl { margin-top: 28px; }
+    .about dd { margin-bottom: 16px; }
+    .cv { margin-top: 48px; }
+    .cv-row { padding: 12px 0; }
+    .pg-note { margin-bottom: 32px; }
+    footer { padding-top: 56px; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -227,11 +275,12 @@
   <section class="view" id="v-about">
     <h1 class="lead about-lead">Stuck in code and lost in<br>translation, I found myself<br>in design.</h1>
     <div class="about">
+      <figure class="about-photo"><img src="img/about.jpg" alt="Mabel Chen" decoding="async" onerror="this.parentNode.classList.add('missing')"></figure>
       <dl>
         <dt>Based in</dt><dd>Pasadena, California</dd>
         <dt>Languages</dt><dd>Mandarin (native)<br>English (advanced)<br>Japanese (advanced)</dd>
         <dt>Contact</dt>
-        <dd><a href="mailto:aestatis511@gmail.com">Email</a><br><a href="https://www.linkedin.com/in/mabel-chen-61757a385/" target="_blank" rel="noopener">LinkedIn</a><br><a href="https://www.instagram.com/aestatis_mare?igsh=OGQ5ZDc2ODk2ZA==" target="_blank" rel="noopener">Instagram</a><br><a href="Mabel_Chen_Resume.pdf" target="_blank" rel="noopener">CV (PDF)</a></dd>
+        <dd><a href="mailto:aestatis511@gmail.com">Email</a><br><a href="https://www.linkedin.com/in/mabel-chen-61757a385/" target="_blank" rel="noopener">LinkedIn</a><br><a href="https://www.instagram.com/aestatis_mare?igsh=OGQ5ZDc2ODk2ZA==" target="_blank" rel="noopener">Instagram</a><br><a class="tip" href="mailto:aestatis511@gmail.com?subject=CV%20request" data-tip="Upon request">CV</a></dd>
       </dl>
       <div class="body">
         <p>Code gave me systems; translation gave me feeling. I start by observing everyday things, from a single leaf to an endless road, and follow my curiosity into the stories behind them. Systems are my roots; feeling is what blooms on top.</p>
@@ -263,6 +312,7 @@
 
   <section class="view" id="v-playground">
     <h1 class="lead">Playground</h1>
+    <p class="pg-note">Side projects, leftovers and happy accidents. Poke at anything that catches your eye.</p>
     <div class="pg-grid" id="pg"></div>
   </section>
 </main>
@@ -358,7 +408,7 @@ const PROJECTS = {
       { h: "Two voices", p: ["The present, including my own voice, is set in orange Optima. The archive is set in black serif. The two often share a spread, so readers always know which history they are standing in."] },
       { h: "The title", p: ["The road is historic, not historical: it was declared important rather than lived that way. “Perfectly” is the giveaway. The story was too tidy to be true."] }
     ],
-    dir: 'el-camino-real', openFull: true, seqSpeed: 800, images: [],
+    dir: 'el-camino-real', homeCover: 'cover-mainpage', openFull: true, seqSpeed: 800, images: [],
     layout: [
       {"p-row": ["spread-c", "seq=flip-01,flip-02,flip-03,flip-04,flip-05,flip-06,flip-07,flip-08,flip-09,flip-10,flip-11"]}, {"flip": ["spread-e", "photo-02.png"]}, "chap",
       {"p-row": ["spread-i", "spread-j"]}, {"flip": ["seq=flip-map-12,flip-map-13,flip-map-14,flip-map-15,flip-map-16,flip-map-17,flip-map-18,flip-map-19,flip-map-20,flip-map-21,flip-map-22,flip-map-23,flip-map-24", "photo-01.png"]}, "chap",
@@ -442,17 +492,12 @@ const PROJECTS = {
       { h: "Process", p: ["Season by season, I recorded the same flowerbeds. I screen-printed the plants on tracing paper over printed soil and paving, and bound the five booklets with string into one timeline."] }
     ],
     dir: 'garden-diaries', images: ['gd-01','gd-02','gd-03','gd-04','gd-05','gd-06','gd-07','gd-08','gd-09','gd-10','gd-11','gd-12','gd-13','gd-14','gd-15','gd-16','gd-17','gd-18','gd-19','gd-20','gd-21','gd-22','gd-23','gd-24','gd-25','gd-26','gd-27']
-  },
-  'random-glyph': {
-    title: 'Random Glyph', category: 'Typeface Design', year: '2025',
-    services: ['Typeface Design'], desc: [],
-    dir: 'random-glyph', images: ['01','02','03']
   }
 };
 Object.values(PROJECTS).forEach((p) => { p.cover = p.cover || 'cover'; p.chapters = p.chapters || []; });
 
 /* Home: every project, read left to right, row by row. The first row is the three case studies. */
-const HOME = ['mori', 'el-camino-real', 'punk', 'harbor-freight', 'kitbit', 'ink-life', 'miffy-trap', 'garden-diaries', 'random-glyph'];
+const HOME = ['el-camino-real', 'mori', 'punk', 'harbor-freight', 'kitbit', 'ink-life', 'miffy-trap', 'garden-diaries'];
 const ORDER = HOME;
 
 /* Playground: the smaller experiments. */
@@ -466,7 +511,7 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const src = (k, f) => `img/${PROJECTS[k].dir}/${/\.[a-z0-9]+$/i.test(f) ? f : f + '.jpg'}`;  // names with an extension are used as-is
-  const frame = (s, alt) => `<span class="fr" data-src="${esc(s)}"><img src="${esc(s)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('missing');this.remove()"></span>`;
+  const frame = (s, alt) => `<span class="fr" data-src="${esc(s)}"><img src="${esc(s)}" alt="${esc(alt)}" loading="lazy" decoding="async" fetchpriority="auto" onerror="this.parentNode.classList.add('missing');this.remove()"></span>`;
 
   /* ---- reveal on scroll ---- */
   const io = new IntersectionObserver((es) => es.forEach((e) => {
@@ -502,13 +547,14 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
       im.style.setProperty('--py', (t * -2.5).toFixed(2) + '%');
     });
   };
-  if (!reduce) addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(drift); } }, { passive: true });
+  // (scroll drift removed: it needed the picture enlarged, which softened it)
 
   // sound toggle: autoplay has to start muted, so the viewer turns sound on
   document.addEventListener('click', (e) => {
     const b = e.target.closest('.snd'); if (!b) return;
     const v = b.parentNode.querySelector('video'); v.muted = !v.muted; if (!v.muted) v.play();
-    b.textContent = v.muted ? 'Sound on' : 'Sound off'; b.setAttribute('aria-pressed', String(!v.muted));
+    b.innerHTML = v.muted ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>'; b.setAttribute('aria-pressed', String(!v.muted));
+    b.setAttribute('aria-label', v.muted ? 'Turn sound on' : 'Turn sound off');
   });
   // image sequences loop like a gif once every frame is loaded
   let seqTimers = [];
@@ -542,14 +588,14 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
 
   const homeTiles = () => HOME.map((k) => {
     const p = PROJECTS[k];
-    return `<a class="tile rv" href="#${k}">${frame(src(k, p.cover), p.title)}<span class="cap"><b>${esc(p.title)}</b><br><u>${esc(p.category)}</u></span></a>`;
+    return `<a class="tile rv" href="#${k}">${frame(src(k, p.homeCover || p.cover), p.title)}<span class="cap"><b>${esc(p.title)}</b><br><u>${esc(p.category)}</u></span></a>`;
   });
   const pgTiles = () => PLAY.map((u, i) => `<button class="pg-item rv" type="button" aria-label="Enlarge image ${i + 1}" aria-pressed="false">${frame(u, '')}</button>`);
 
   /* ---- project page ---- */
   const arrow = '<svg class="arr" viewBox="0 0 26 26" aria-hidden="true"><path d="M2 13h21M15 5l8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
   // only the opening images (before the first text block) get the reveal motion
-  const vframe = (u) => `<span class="fr"><video src="${esc(u)}" autoplay muted loop playsinline preload="metadata" aria-label="Brand video"></video><button class="snd" type="button" aria-pressed="false">Sound on</button></span>`;
+  const vframe = (u) => `<span class="fr"><video src="${esc(u)}" autoplay muted loop playsinline preload="metadata" aria-label="Brand video"></video><button class="snd" type="button" aria-pressed="false" aria-label="Turn sound on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></button></span>`;
   const seqFrames = (k, f) => {
     if (f.startsWith('seq=')) return f.slice(4).split(',').map((x) => src(k, x.trim()));
     const [, name, n] = f.split(':'); return Array.from({ length: +n }, (_, j) => `img/${PROJECTS[k].dir}/${name}-${String(j + 1).padStart(2, '0')}.jpg`); };
@@ -595,7 +641,6 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
         <div><h1 class="p-title">${esc(p.title)}</h1></div>
         <dl class="meta">
           <dt>Services</dt><dd>${p.services.map(esc).join('<br>')}</dd>
-          ${p.thanks ? `<dt>Special thanks</dt><dd>${esc(p.thanks)}</dd>` : ''}
         </dl>
         <div class="desc">${p.desc.length ? `<h2>Description</h2>${p.desc.map((t) => `<p>${esc(t)}</p>`).join('')}` : ''}</div>
       </div>
@@ -618,6 +663,17 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
     if (i > 0) last.nodeValue = t.slice(0, i) + '\u00a0' + t.slice(i + 1) + last.nodeValue.slice(t.length);
   });
   noWidows(document);
+
+  /* ---- logo: split into two cuboids; front faces read mabel / .chen, the faces below read m / .c ---- */
+  {
+    const svg = $('.brand svg'), H = 292, Y = 355;
+    const face = (x0, x1, keep) => { const c = svg.cloneNode(true); c.setAttribute('viewBox', `${x0} ${Y} ${x1 - x0} ${H}`);
+      [...c.children].forEach((el, i) => { if (!keep.includes(i)) el.remove(); }); return c.outerHTML; };
+    const cube = (x0, x1, front, back) => `<span class="cube" style="aspect-ratio: ${x1 - x0} / ${H}"><span class="cube-in">` +
+      `<span class="f f1">${face(x0, x1, front)}</span><span class="f f2">${face(x0, x1, back)}</span></span></span>`;
+    // glyph order in the svg: m a b e c h e n | l (rect) . (rect)
+    svg.outerHTML = `<span class="lg">${cube(101, 925, [0, 1, 2, 3, 8], [0])}${cube(925, 1627, [9, 4, 5, 6, 7], [9, 4])}</span>`;
+  }
 
   /* ---- cursor ---- */
   const cur = $('.cursor');
@@ -665,12 +721,13 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
 
     function runIntro() {
       const vw = innerWidth, vh = innerHeight, ease = 'cubic-bezier(.65, 0, .35, 1)';
-      const brand = $('.brand svg'), stmt = $('.statement');
+      const brand = $('.brand .lg'), stmt = $('.statement');
       const lr = brand.getBoundingClientRect(), qr = stmt.getBoundingClientRect();
 
       // logo clone, laid exactly over the header logo
-      const logo = brand.cloneNode(true); logo.classList.add('i-logo');
-      Object.assign(logo.style, { left: lr.left + 'px', top: lr.top + 'px', width: lr.width + 'px', height: lr.height + 'px' });
+      const logo = brand.cloneNode(true); logo.classList.add('i-logo', 'alt');
+      const ls0 = Math.min(vw * .46 / lr.width, vh * .3 / lr.height);
+      Object.assign(logo.style, { left: (vw - lr.width * ls0) / 2 + 'px', top: (vh - lr.height * ls0) / 2 + 'px', width: lr.width * ls0 + 'px', fontSize: lr.height * ls0 + 'px' });
       // quote clone, laid exactly over the real quote (same width, so the same line breaks)
       const cs = getComputedStyle(stmt), quote = stmt.cloneNode(true); quote.classList.add('i-quote');
       Object.assign(quote.style, { left: qr.left + 'px', top: qr.top + 'px', width: qr.width + 'px', maxWidth: 'none',
@@ -680,21 +737,31 @@ const PLAY = ['01', '02', '03', '04 2', '04', '05', '07', '08', '10', '12', '16'
 
       const centre = (r, s) => `translate(${vw / 2 - (r.left + r.width / 2)}px, ${vh / 2 - (r.top + r.height / 2)}px) scale(${s})`;
       const ls = Math.min(vw * .46 / lr.width, vh * .3 / lr.height);
-      const qs = Math.min(vw * .88 / qr.width, vh * .72 / qr.height);
+      // quote sits in the upper-right two thirds of the screen, right edge on the page margin
+      const pad = qr.right ? vw - qr.right : 24;
+      const qs = Math.min((vw * 2 / 3 - pad) / qr.width, (vh * 2 / 3) * .8 / qr.height);
+      const qPos = `translate(${vw - pad - qr.width * qs / 2 - (qr.left + qr.width / 2)}px, ${vh / 3 - (qr.top + qr.height / 2)}px) scale(${qs})`;
       const anims = [];
       const A = (el, kf, o) => { const a = el.animate(kf, { fill: 'both', ...o }); anims.push(a); return a; };
 
       logo.style.visibility = 'visible';
-      A(logo, [{ transform: centre(lr, ls), opacity: 0 }, { transform: centre(lr, ls), opacity: 1 }], { duration: 600, easing: 'ease-out' });
+      A(logo, [{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' });
+
+      // the cuboids start on the initials m.c, then roll over to mabel.chen
+      setTimeout(() => logo.classList.remove('alt'), 750);
+
       // logo fades out where it is; the quote follows
-      A(logo, [{ transform: centre(lr, ls), opacity: 1 }, { transform: centre(lr, ls), opacity: 0 }], { delay: 1400, duration: 700, easing: 'ease-in' });
-      const T0 = 2100;
-      A(quote, [{ opacity: 1, transform: centre(qr, qs) }, { opacity: 1, transform: centre(qr, qs) }], { delay: T0, duration: 1 });
-      $$('.ln > i', quote).forEach((el, i) => A(el, [{ clipPath: 'inset(-0.25em 100% -0.35em 0)' }, { clipPath: 'inset(-0.25em 0 -0.35em 0)' }],
-        { delay: T0 + 100 + i * 420, duration: 900, easing: 'cubic-bezier(.19, 1, .22, 1)' }));
-      const T1 = T0 + 100 + 3 * 420 + 900 + 500;
-      A(quote, [{ opacity: 1, transform: centre(qr, qs) }, { opacity: 1, transform: 'none' }], { delay: T1, duration: 1200, easing: ease });
-      const fade = A(ov, [{ backgroundColor: getComputedStyle(ov).backgroundColor }, { backgroundColor: 'transparent' }], { delay: T1 + 1150, duration: 500 });
+      A(logo, [{ opacity: 1 }, { opacity: 0 }], { delay: 2450, duration: 550, easing: 'ease-in' });
+      const T0 = 3000;
+      A(quote, [{ opacity: 1, transform: qPos }, { opacity: 1, transform: qPos }], { delay: T0, duration: 1 });
+      // each line fades in, one after another
+      $$('.ln > i', quote).forEach((el, i) => A(el, [{ opacity: 0 }, { opacity: 1 }],
+        { delay: T0 + 100 + i * 260, duration: 550, easing: 'ease-out' }));
+      // while the lines are still appearing, the quote already shrinks and drifts to its place top-right
+      const MOVE = 2000;
+      A(quote, [{ opacity: 1, transform: qPos }, { opacity: 1, transform: 'none' }], { delay: T0 + 250, duration: MOVE, easing: 'cubic-bezier(.45, 0, .2, 1)' });
+      const T1 = T0 + 250 + MOVE;
+      const fade = A(ov, [{ backgroundColor: getComputedStyle(ov).backgroundColor }, { backgroundColor: 'transparent' }], { delay: T1 - 100, duration: 500 });
 
       let ended = false;
       const end = () => {
