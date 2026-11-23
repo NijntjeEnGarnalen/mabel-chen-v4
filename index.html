@@ -206,12 +206,15 @@
     .about dl { grid-column: 1 / -1; grid-row: 2; margin-top: 40px; }
     .about .body { grid-row: 1; }
     .about-photo { grid-column: 1 / -1; grid-row: 3; max-width: 100%; margin-top: 32px; }
-    .cv-row { grid-template-columns: 1fr 1fr; row-gap: 6px; }
-    .cv-row > div { grid-column: 1 / -1; }
+    /* section title on its own line; each date sits on the right, level with the school or role */
+    .cv-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0; }
     .cv-sec:empty { display: none; }
-    .cv-sec:empty + .cv-date { grid-column: 1 / -1; }
-    .cv-date { justify-self: end; text-align: right; }
-    .cv-sec:not(:empty) { margin-bottom: 14px; }
+    .cv-sec:not(:empty) { grid-column: 1 / -1; margin-bottom: 14px; }
+    .cv-row > div, .cv-date { grid-row: 1; }
+    .cv-row:has(.cv-sec:not(:empty)) > div, .cv-row:has(.cv-sec:not(:empty)) .cv-date { grid-row: 2; }
+    .cv-row > div { grid-column: 1 / -1; }
+    .cv-date { grid-column: 2; justify-self: end; text-align: right; line-height: calc(14px * 1.3); }
+    .cv-t { padding-right: 9em; }
     .meta, .desc { padding-top: 40px; }
     .statement { grid-column: 1 / -1; margin-top: 18px; }
     .qm { grid-column: 1 / -1; }
@@ -295,7 +298,7 @@
       <div class="cv-row"><span class="cv-sec">Expertise</span><span class="cv-date"></span><div><p class="cv-t">Design software</p><p class="cv-o">Illustrator, InDesign, Photoshop, Nomad Sculpt, Figma</p></div></div>
       <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Programming</p><p class="cv-o">C, C++, C#, JavaScript, HTML, CSS, Vue.js, React, SQL</p></div></div>
       <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">AI tools</p><p class="cv-o">Claude Code, ChatGPT, Midjourney, Adobe Firefly, Figma AI</p></div></div>
-      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Skills</p><p class="cv-o">Editorial design, brand identity, exhibition design, screen printing, bookbinding, 3D&nbsp;printing, frontend development</p></div></div>
+      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Skills</p><p class="cv-o">Editorial Design, Brand Identity, Exhibition Design, Screen Printing, Letterpress, Bookbinding, 3D&nbsp;Printing, Frontend Development</p></div></div>
       <div class="cv-row"><span class="cv-sec">Experience</span><span class="cv-date">Sep 2026–Present</span><div><p class="cv-t">Teaching Assistant</p><p class="cv-o">ArtCenter College of Design</p><p class="cv-d">Assist Professor Brad Bartlett with Graduate Seminar 3 in the Graphic Design Master of Fine Arts program. Give students feedback on their research and projects, and manage course communication.</p></div></div>
       <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Apr 2024–Aug 2024</span><div><p class="cv-t">Director of Online Auction, Artwork Department</p><p class="cv-o">Shanghai Dagong Auction Co., Ltd.</p><p class="cv-d">Managed weekly inventory and edited artwork listings for online auctions. Designed weekly auction posters, and promotional posters, videos and catalogs for two large offline auctions each year.</p></div></div>
       <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Jan 2024–Apr 2024</span><div><p class="cv-t">Japanese Translation Intern</p><p class="cv-o">Shanghai Cangyuan Industrial Co., Ltd.</p><p class="cv-d">Translated 150,000 words of official documents between Chinese and Japanese.</p></div></div>
@@ -306,7 +309,6 @@
       <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Fall 2025–Present</span><div><p class="cv-t">ArtCenter Graduate Scholarship</p><p class="cv-o">ArtCenter College of Design</p><p class="cv-d">Awarded each term.</p></div></div>
       <div class="cv-row"><span class="cv-sec"></span><span class="cv-date"></span><div><p class="cv-t">Gallery Exhibition</p><p class="cv-o">ArtCenter College of Design</p><p class="cv-d">Posters for Harbor Freight, Digital Detox and Mori selected for exhibition in the ArtCenter gallery.</p></div></div>
       <div class="cv-row"><span class="cv-sec">Involvement</span><span class="cv-date">Nov 2022–Dec 2023</span><div><p class="cv-t">Volunteer Editor</p><p class="cv-o">Peking University Japanese Group</p><p class="cv-d">Translated the Japanese children’s book Kirakira Sagashi into Chinese (published June 2024), and managed the group’s WeChat account and monthly newsletter.</p></div></div>
-      <div class="cv-row"><span class="cv-sec"></span><span class="cv-date">Jun 2018–Sep 2019</span><div><p class="cv-t">Student Mentor</p><p class="cv-o">Software Engineering, East China Normal University</p><p class="cv-d">Organized orientation sessions and workshops for new students.</p></div></div>
     </div>
   </section>
 
